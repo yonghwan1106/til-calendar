@@ -6,6 +6,7 @@ export type Category =
   | 'reading'   // 독서
   | 'hobby'     // 취미
   | 'work'      // 업무
+  | 'finance'   // 재테크
   | 'other';    // 기타
 
 // TIL 기록 항목
@@ -63,6 +64,11 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     label: '업무',
     color: 'text-slate-600',
     bgColor: 'bg-slate-100',
+  },
+  finance: {
+    label: '재테크',
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-100',
   },
   other: {
     label: '기타',
