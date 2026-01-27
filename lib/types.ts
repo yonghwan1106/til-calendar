@@ -1,8 +1,7 @@
 // TIL 카테고리 타입
 export type Category =
-  | 'coding'    // 코딩
+  | 'ai'        // AI/인공지능
   | 'life'      // 인생
-  | 'language'  // 언어
   | 'reading'   // 독서
   | 'hobby'     // 취미
   | 'work'      // 업무
@@ -35,8 +34,8 @@ export interface CategoryInfo {
 
 // 카테고리 매핑
 export const CATEGORIES: Record<Category, CategoryInfo> = {
-  coding: {
-    label: '코딩',
+  ai: {
+    label: 'AI',
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
   },
@@ -44,11 +43,6 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     label: '인생',
     color: 'text-purple-600',
     bgColor: 'bg-purple-100',
-  },
-  language: {
-    label: '언어',
-    color: 'text-green-600',
-    bgColor: 'bg-green-100',
   },
   reading: {
     label: '독서',

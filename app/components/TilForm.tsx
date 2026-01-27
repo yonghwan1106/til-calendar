@@ -13,7 +13,7 @@ interface TilFormProps {
 export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState<Category>('coding');
+  const [category, setCategory] = useState<Category>('ai');
 
   useEffect(() => {
     if (editEntry) {
@@ -23,7 +23,7 @@ export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilForm
     } else {
       setTitle('');
       setContent('');
-      setCategory('coding');
+      setCategory('ai');
     }
   }, [editEntry]);
 
@@ -40,7 +40,7 @@ export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilForm
     // 폼 초기화
     setTitle('');
     setContent('');
-    setCategory('coding');
+    setCategory('ai');
   };
 
   const formatDateDisplay = (dateStr: string) => {
