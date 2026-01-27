@@ -15,6 +15,7 @@ import {
   deleteEntry,
 } from '@/lib/storage';
 import { formatDate, filterEntries } from '@/lib/utils';
+import { hasLocalStorageData, migrateToSupabase, clearLocalStorage, getLocalStorageData } from '@/lib/migration';
 
 export default function Home() {
   const [entries, setEntries] = useState<TilEntry[]>([]);
@@ -26,16 +27,47 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<TilEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showDetailPanel, setShowDetailPanel] = useState(false);
+  const [showMigrationBanner, setShowMigrationBanner] = useState(false);
+  const [isMigrating, setIsMigrating] = useState(false);
+  const [localDataCount, setLocalDataCount] = useState(0);
 
-  // 모든 엔트리 로드
+  // 모든 엔트리 로드 + localStorage 데이터 확인
   useEffect(() => {
     const loadEntries = async () => {
       const loadedEntries = await getAllEntries();
       setEntries(loadedEntries);
       setIsLoading(false);
+
+      // localStorage에 데이터가 있는지 확인
+      if (hasLocalStorageData()) {
+        const localData = getLocalStorageData();
+        setLocalDataCount(localData.length);
+        setShowMigrationBanner(true);
+      }
     };
     loadEntries();
   }, []);
+
+  // 마이그레이션 핸들러
+  const handleMigration = async () => {
+    setIsMigrating(true);
+    const result = await migrateToSupabase();
+
+    if (result.success > 0) {
+      // 마이그레이션 성공 시 데이터 새로고침
+      const loadedEntries = await getAllEntries();
+      setEntries(loadedEntries);
+      clearLocalStorage();
+      alert(`${result.success}개의 기록을 성공적으로 마이그레이션했습니다!`);
+    }
+
+    if (result.failed > 0) {
+      alert(`${result.failed}개의 기록 마이그레이션에 실패했습니다.`);
+    }
+
+    setShowMigrationBanner(false);
+    setIsMigrating(false);
+  };
 
   // 선택된 날짜의 엔트리 로드
   useEffect(() => {
@@ -146,6 +178,42 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* 마이그레이션 배너 */}
+      {showMigrationBanner && (
+        <div className="bg-amber-50 border-b border-amber-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm text-amber-800">
+                  브라우저에 저장된 <strong>{localDataCount}개</strong>의 기존 기록이 있습니다. 클라우드로 마이그레이션하시겠습니까?
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleMigration}
+                  disabled={isMigrating}
+                  className="px-4 py-1.5 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50 transition-colors"
+                >
+                  {isMigrating ? '마이그레이션 중...' : '마이그레이션'}
+                </button>
+                <button
+                  onClick={() => setShowMigrationBanner(false)}
+                  className="p-1.5 text-amber-600 hover:bg-amber-100 rounded-lg transition-colors"
+                  aria-label="닫기"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 pt-4">
         {/* 검색바 */}
