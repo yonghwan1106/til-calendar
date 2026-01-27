@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TilEntry } from '@/lib/types';
+import { TilEntry, CATEGORIES } from '@/lib/types';
 import {
   formatDate,
   getDaysInMonth,
@@ -16,12 +16,14 @@ interface CalendarProps {
   entries: TilEntry[];
   selectedDate: string;
   onDateSelect: (date: string) => void;
+  expanded?: boolean;
 }
 
 export default function Calendar({
   entries,
   selectedDate,
   onDateSelect,
+  expanded = false,
 }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [entriesByDate, setEntriesByDate] = useState<Record<string, TilEntry[]>>({});
@@ -36,47 +38,40 @@ export default function Calendar({
   const firstDayOfMonth = getFirstDayOfMonth(year, month);
   const dayNames = getDayNames();
 
-  // 이전 달로 이동
   const goToPrevMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
   };
 
-  // 다음 달로 이동
   const goToNextMonth = () => {
     setCurrentDate(new Date(year, month + 1, 1));
   };
 
-  // 오늘로 이동
   const goToToday = () => {
     const today = new Date();
     setCurrentDate(today);
     onDateSelect(formatDate(today));
   };
 
-  // 캘린더 그리드 생성
   const calendarDays: (number | null)[] = [];
 
-  // 첫 주의 빈 칸 채우기
   for (let i = 0; i < firstDayOfMonth; i++) {
     calendarDays.push(null);
   }
 
-  // 날짜 채우기
   for (let day = 1; day <= daysInMonth; day++) {
     calendarDays.push(day);
   }
 
-  // 해당 날짜의 기록 개수 가져오기
-  const getEntryCount = (day: number): number => {
+  const getEntriesForDay = (day: number): TilEntry[] => {
     const dateStr = formatDate(new Date(year, month, day));
-    return entriesByDate[dateStr]?.length || 0;
+    return entriesByDate[dateStr] || [];
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
       {/* 헤더 */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
           {year}년 {getMonthName(month)}
         </h2>
         <div className="flex items-center gap-2">
@@ -128,7 +123,7 @@ export default function Calendar({
       </div>
 
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 mb-2">
+      <div className="grid grid-cols-7 mb-2 border-b border-gray-100 pb-2">
         {dayNames.map((day, index) => (
           <div
             key={day}
@@ -141,66 +136,129 @@ export default function Calendar({
         ))}
       </div>
 
-      {/* 날짜 그리드 */}
-      <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((day, index) => {
-          if (day === null) {
-            return <div key={`empty-${index}`} className="aspect-square" />;
-          }
+      {/* 날짜 그리드 - 확장 모드 */}
+      {expanded ? (
+        <div className="grid grid-cols-7 gap-1">
+          {calendarDays.map((day, index) => {
+            if (day === null) {
+              return <div key={`empty-${index}`} className="min-h-[100px] md:min-h-[120px]" />;
+            }
 
-          const dateStr = formatDate(new Date(year, month, day));
-          const entryCount = getEntryCount(day);
-          const isTodayDate = isToday(dateStr);
-          const isSelected = selectedDate === dateStr;
-          const dayOfWeek = (firstDayOfMonth + day - 1) % 7;
-          const isSunday = dayOfWeek === 0;
-          const isSaturday = dayOfWeek === 6;
+            const dateStr = formatDate(new Date(year, month, day));
+            const dayEntries = getEntriesForDay(day);
+            const isTodayDate = isToday(dateStr);
+            const isSelected = selectedDate === dateStr;
+            const dayOfWeek = (firstDayOfMonth + day - 1) % 7;
+            const isSunday = dayOfWeek === 0;
+            const isSaturday = dayOfWeek === 6;
 
-          return (
-            <button
-              key={day}
-              onClick={() => onDateSelect(dateStr)}
-              className={`
-                aspect-square flex flex-col items-center justify-center rounded-lg
-                transition-all duration-200 relative
-                ${isSelected ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100'}
-                ${isTodayDate && !isSelected ? 'ring-2 ring-blue-500 ring-inset' : ''}
-              `}
-            >
-              <span
+            return (
+              <button
+                key={day}
+                onClick={() => onDateSelect(dateStr)}
                 className={`
-                  text-sm font-medium
-                  ${isSelected ? 'text-white' : isSunday ? 'text-red-500' : isSaturday ? 'text-blue-500' : 'text-gray-700'}
+                  min-h-[100px] md:min-h-[120px] p-1.5 md:p-2 flex flex-col items-start rounded-lg
+                  transition-all duration-200 border text-left
+                  ${isSelected
+                    ? 'bg-blue-50 border-blue-500 shadow-sm'
+                    : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'}
+                  ${isTodayDate ? 'ring-2 ring-blue-500 ring-inset' : ''}
                 `}
               >
-                {day}
-              </span>
-              {/* 기록 인디케이터 */}
-              {entryCount > 0 && (
-                <div className="flex gap-0.5 mt-0.5">
-                  {Array.from({ length: Math.min(entryCount, 3) }).map((_, i) => (
+                <span
+                  className={`
+                    text-sm font-semibold mb-1
+                    ${isSunday ? 'text-red-500' : isSaturday ? 'text-blue-500' : 'text-gray-700'}
+                  `}
+                >
+                  {day}
+                </span>
+                {/* TIL 제목 목록 */}
+                <div className="w-full space-y-0.5 overflow-hidden flex-1">
+                  {dayEntries.slice(0, 3).map((entry) => (
                     <div
-                      key={i}
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        isSelected ? 'bg-white' : 'bg-blue-500'
-                      }`}
-                    />
-                  ))}
-                  {entryCount > 3 && (
-                    <span
-                      className={`text-[10px] ${
-                        isSelected ? 'text-white' : 'text-blue-500'
-                      }`}
+                      key={entry.id}
+                      className={`
+                        text-[10px] md:text-xs px-1.5 py-0.5 rounded truncate
+                        ${CATEGORIES[entry.category].bgColor} ${CATEGORIES[entry.category].color}
+                      `}
+                      title={entry.title}
                     >
-                      +
-                    </span>
+                      {entry.title}
+                    </div>
+                  ))}
+                  {dayEntries.length > 3 && (
+                    <div className="text-[10px] text-gray-400 px-1">
+                      +{dayEntries.length - 3}개 더
+                    </div>
                   )}
                 </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        /* 컴팩트 모드 (기존) */
+        <div className="grid grid-cols-7 gap-1">
+          {calendarDays.map((day, index) => {
+            if (day === null) {
+              return <div key={`empty-${index}`} className="aspect-square" />;
+            }
+
+            const dateStr = formatDate(new Date(year, month, day));
+            const dayEntries = getEntriesForDay(day);
+            const entryCount = dayEntries.length;
+            const isTodayDate = isToday(dateStr);
+            const isSelected = selectedDate === dateStr;
+            const dayOfWeek = (firstDayOfMonth + day - 1) % 7;
+            const isSunday = dayOfWeek === 0;
+            const isSaturday = dayOfWeek === 6;
+
+            return (
+              <button
+                key={day}
+                onClick={() => onDateSelect(dateStr)}
+                className={`
+                  aspect-square flex flex-col items-center justify-center rounded-lg
+                  transition-all duration-200 relative
+                  ${isSelected ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100'}
+                  ${isTodayDate && !isSelected ? 'ring-2 ring-blue-500 ring-inset' : ''}
+                `}
+              >
+                <span
+                  className={`
+                    text-sm font-medium
+                    ${isSelected ? 'text-white' : isSunday ? 'text-red-500' : isSaturday ? 'text-blue-500' : 'text-gray-700'}
+                  `}
+                >
+                  {day}
+                </span>
+                {entryCount > 0 && (
+                  <div className="flex gap-0.5 mt-0.5">
+                    {Array.from({ length: Math.min(entryCount, 3) }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          isSelected ? 'bg-white' : 'bg-blue-500'
+                        }`}
+                      />
+                    ))}
+                    {entryCount > 3 && (
+                      <span
+                        className={`text-[10px] ${
+                          isSelected ? 'text-white' : 'text-blue-500'
+                        }`}
+                      >
+                        +
+                      </span>
+                    )}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
