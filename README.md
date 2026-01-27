@@ -12,20 +12,19 @@ https://til-calendar.vercel.app/
 
 ### 캘린더 뷰
 - 월별 캘린더 표시
-- 기록이 있는 날짜에 dot indicator 표시
+- 기록이 있는 날짜에 TIL 제목 직접 표시
 - 날짜 클릭으로 해당 날짜 기록 보기/편집
 
 ### TIL 기록
 - 제목 (배운 것 한 줄 요약)
 - 내용 (상세 설명, 선택사항)
-- 카테고리 태그: 코딩, 인생, 언어, 독서, 취미, 업무, 기타
+- 카테고리 태그: AI, 인생, 독서, 취미, 업무, 재테크, 기타
 - 하루에 여러 개 기록 가능
 
 ### 통계 대시보드
 - 연속 기록 일수 (streak)
 - 이번 달 학습 기록 수
 - 전체 기록 수
-- 카테고리별 분포 차트
 
 ### 검색 & 필터
 - 키워드 검색
@@ -34,22 +33,22 @@ https://til-calendar.vercel.app/
 ## 기술 스택
 
 - **Framework**: Next.js 16 (App Router)
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS 4
 - **Language**: TypeScript
-- **Storage**: localStorage (브라우저 로컬 저장)
+- **Database**: Supabase (PostgreSQL)
 - **Font**: Pretendard
 - **Deployment**: Vercel
 
 ## 데이터 저장 방식
 
-이 앱은 **localStorage**를 사용하여 데이터를 저장합니다:
+이 앱은 **Supabase**를 사용하여 데이터를 저장합니다:
 
 | 특징 | 설명 |
 |------|------|
-| 저장 위치 | 사용자의 브라우저 |
-| 데이터 유지 | 같은 브라우저에서 접속 시 유지 |
-| 데이터 삭제 | 브라우저 캐시/데이터 삭제 시 사라짐 |
-| 동기화 | 다른 기기/브라우저 간 동기화 안됨 |
+| 저장 위치 | Supabase 클라우드 데이터베이스 |
+| 데이터 유지 | 영구 저장 |
+| 동기화 | 모든 기기에서 동일한 데이터 접근 가능 |
+| 마이그레이션 | 기존 localStorage 데이터 자동 마이그레이션 지원 |
 
 ## 로컬 개발
 
@@ -57,11 +56,22 @@ https://til-calendar.vercel.app/
 # 의존성 설치
 npm install
 
+# 환경 변수 설정
+cp .env.example .env.local
+# .env.local 파일에 Supabase URL과 Anon Key 입력
+
 # 개발 서버 실행
 npm run dev
 
 # 빌드
 npm run build
+```
+
+## 환경 변수
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ## 프로젝트 구조
@@ -79,14 +89,12 @@ til-calendar/
 │       ├── Stats.tsx       # 통계 대시보드
 │       └── SearchBar.tsx   # 검색 바
 ├── lib/
-│   ├── storage.ts          # localStorage 유틸리티
+│   ├── storage.ts          # Supabase CRUD 유틸리티
+│   ├── supabase.ts         # Supabase 클라이언트
+│   ├── migration.ts        # localStorage 마이그레이션
 │   ├── types.ts            # TypeScript 타입 정의
 │   └── utils.ts            # 유틸리티 함수
 ```
-
-## 스크린샷
-
-![TIL Calendar Screenshot](https://til-calendar.vercel.app/og-image.png)
 
 ## 라이선스
 
