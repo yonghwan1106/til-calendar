@@ -1,150 +1,133 @@
 'use client';
 
-import { TilEntry, TilStorage, Category, CATEGORIES } from './types';
-import { generateId } from './utils';
-
-const STORAGE_KEY = 'til-calendar-data';
+import { TilEntry, Category, CATEGORIES } from './types';
+import { supabase, DbTilEntry } from './supabase';
 
 // 유효한 카테고리인지 확인
 function isValidCategory(category: string): category is Category {
   return category in CATEGORIES;
 }
 
-// 기존 카테고리를 새 카테고리로 마이그레이션
-function migrateCategory(category: string): Category {
-  // 삭제된 카테고리 매핑
-  const migration: Record<string, Category> = {
-    'coding': 'ai',      // 코딩 → AI
-    'language': 'other', // 언어 → 기타
+// DB 엔트리를 앱 엔트리로 변환
+function dbToApp(db: DbTilEntry): TilEntry {
+  return {
+    id: db.id,
+    date: db.date,
+    title: db.title,
+    content: db.content || undefined,
+    category: isValidCategory(db.category) ? db.category : 'other',
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
   };
-
-  if (migration[category]) {
-    return migration[category];
-  }
-
-  if (isValidCategory(category)) {
-    return category;
-  }
-
-  return 'other';
-}
-
-// localStorage에서 데이터 로드 (마이그레이션 포함)
-export function loadStorage(): TilStorage {
-  if (typeof window === 'undefined') {
-    return { entries: [], lastUpdated: new Date().toISOString() };
-  }
-
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) {
-      const storage = JSON.parse(data) as TilStorage;
-
-      // 카테고리 마이그레이션
-      let needsSave = false;
-      storage.entries = storage.entries.map(entry => {
-        const migratedCategory = migrateCategory(entry.category);
-        if (migratedCategory !== entry.category) {
-          needsSave = true;
-          return { ...entry, category: migratedCategory };
-        }
-        return entry;
-      });
-
-      // 마이그레이션이 발생했으면 저장
-      if (needsSave) {
-        saveStorage(storage);
-      }
-
-      return storage;
-    }
-  } catch (error) {
-    console.error('Failed to load storage:', error);
-  }
-
-  return { entries: [], lastUpdated: new Date().toISOString() };
-}
-
-// localStorage에 데이터 저장
-export function saveStorage(storage: TilStorage): void {
-  if (typeof window === 'undefined') return;
-
-  try {
-    storage.lastUpdated = new Date().toISOString();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
-  } catch (error) {
-    console.error('Failed to save storage:', error);
-  }
 }
 
 // 모든 TIL 엔트리 가져오기
-export function getAllEntries(): TilEntry[] {
-  const storage = loadStorage();
-  return storage.entries.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+export async function getAllEntries(): Promise<TilEntry[]> {
+  const { data, error } = await supabase
+    .from('til_entries')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Failed to fetch entries:', error);
+    return [];
+  }
+
+  return (data || []).map(dbToApp);
 }
 
 // 특정 날짜의 TIL 엔트리 가져오기
-export function getEntriesByDate(date: string): TilEntry[] {
-  const entries = getAllEntries();
-  return entries.filter(entry => entry.date === date);
+export async function getEntriesByDate(date: string): Promise<TilEntry[]> {
+  const { data, error } = await supabase
+    .from('til_entries')
+    .select('*')
+    .eq('date', date)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Failed to fetch entries by date:', error);
+    return [];
+  }
+
+  return (data || []).map(dbToApp);
 }
 
 // 새 TIL 엔트리 추가
-export function addEntry(
+export async function addEntry(
   entry: Omit<TilEntry, 'id' | 'createdAt' | 'updatedAt'>
-): TilEntry {
-  const storage = loadStorage();
-  const now = new Date().toISOString();
+): Promise<TilEntry | null> {
+  const { data, error } = await supabase
+    .from('til_entries')
+    .insert({
+      date: entry.date,
+      title: entry.title,
+      content: entry.content || null,
+      category: entry.category,
+    })
+    .select()
+    .single();
 
-  const newEntry: TilEntry = {
-    ...entry,
-    id: generateId(),
-    createdAt: now,
-    updatedAt: now,
-  };
+  if (error) {
+    console.error('Failed to add entry:', error);
+    return null;
+  }
 
-  storage.entries.push(newEntry);
-  saveStorage(storage);
-
-  return newEntry;
+  return dbToApp(data);
 }
 
 // TIL 엔트리 수정
-export function updateEntry(
+export async function updateEntry(
   id: string,
   updates: Partial<Omit<TilEntry, 'id' | 'createdAt'>>
-): TilEntry | null {
-  const storage = loadStorage();
-  const index = storage.entries.findIndex(e => e.id === id);
+): Promise<TilEntry | null> {
+  const updateData: Record<string, unknown> = {};
+  if (updates.date !== undefined) updateData.date = updates.date;
+  if (updates.title !== undefined) updateData.title = updates.title;
+  if (updates.content !== undefined) updateData.content = updates.content || null;
+  if (updates.category !== undefined) updateData.category = updates.category;
 
-  if (index === -1) return null;
+  const { data, error } = await supabase
+    .from('til_entries')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single();
 
-  storage.entries[index] = {
-    ...storage.entries[index],
-    ...updates,
-    updatedAt: new Date().toISOString(),
-  };
+  if (error) {
+    console.error('Failed to update entry:', error);
+    return null;
+  }
 
-  saveStorage(storage);
-  return storage.entries[index];
+  return dbToApp(data);
 }
 
 // TIL 엔트리 삭제
-export function deleteEntry(id: string): boolean {
-  const storage = loadStorage();
-  const initialLength = storage.entries.length;
-  storage.entries = storage.entries.filter(e => e.id !== id);
+export async function deleteEntry(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('til_entries')
+    .delete()
+    .eq('id', id);
 
-  if (storage.entries.length < initialLength) {
-    saveStorage(storage);
-    return true;
+  if (error) {
+    console.error('Failed to delete entry:', error);
+    return false;
   }
 
-  return false;
+  return true;
 }
 
 // 특정 ID의 TIL 엔트리 가져오기
-export function getEntryById(id: string): TilEntry | null {
-  const entries = getAllEntries();
-  return entries.find(e => e.id === id) || null;
+export async function getEntryById(id: string): Promise<TilEntry | null> {
+  const { data, error } = await supabase
+    .from('til_entries')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error('Failed to fetch entry:', error);
+    return null;
+  }
+
+  return dbToApp(data);
 }

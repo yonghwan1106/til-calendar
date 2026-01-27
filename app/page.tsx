@@ -27,39 +27,50 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDetailPanel, setShowDetailPanel] = useState(false);
 
+  // 모든 엔트리 로드
   useEffect(() => {
-    const loadedEntries = getAllEntries();
-    setEntries(loadedEntries);
-    setIsLoading(false);
+    const loadEntries = async () => {
+      const loadedEntries = await getAllEntries();
+      setEntries(loadedEntries);
+      setIsLoading(false);
+    };
+    loadEntries();
   }, []);
 
+  // 선택된 날짜의 엔트리 로드
   useEffect(() => {
-    if (!isSearchMode) {
-      setSelectedDateEntries(getEntriesByDate(selectedDate));
-    }
+    const loadDateEntries = async () => {
+      if (!isSearchMode) {
+        const dateEntries = await getEntriesByDate(selectedDate);
+        setSelectedDateEntries(dateEntries);
+      }
+    };
+    loadDateEntries();
   }, [selectedDate, entries, isSearchMode]);
 
-  const handleAddEntry = useCallback((data: { title: string; content?: string; category: Category }) => {
-    const newEntry = addEntry({
+  const handleAddEntry = useCallback(async (data: { title: string; content?: string; category: Category }) => {
+    const newEntry = await addEntry({
       ...data,
       date: selectedDate,
     });
-    setEntries(prev => [newEntry, ...prev]);
+    if (newEntry) {
+      setEntries(prev => [newEntry, ...prev]);
+    }
     setEditEntry(null);
   }, [selectedDate]);
 
-  const handleUpdateEntry = useCallback((data: { title: string; content?: string; category: Category }) => {
+  const handleUpdateEntry = useCallback(async (data: { title: string; content?: string; category: Category }) => {
     if (!editEntry) return;
 
-    const updated = updateEntry(editEntry.id, data);
+    const updated = await updateEntry(editEntry.id, data);
     if (updated) {
       setEntries(prev => prev.map(e => (e.id === updated.id ? updated : e)));
     }
     setEditEntry(null);
   }, [editEntry]);
 
-  const handleDeleteEntry = useCallback((id: string) => {
-    const success = deleteEntry(id);
+  const handleDeleteEntry = useCallback(async (id: string) => {
+    const success = await deleteEntry(id);
     if (success) {
       setEntries(prev => prev.filter(e => e.id !== id));
     }
