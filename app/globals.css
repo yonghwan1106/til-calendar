@@ -1,51 +1,92 @@
-/* Pretendard 폰트 */
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+/* Premium Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Serif+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600&display=swap');
 
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #171717;
+  /* Scholar's Journal Color Palette */
+  --cream: #FAF7F2;
+  --cream-dark: #F5F0E8;
+  --parchment: #EDE8DE;
+  --ink: #1C1917;
+  --ink-light: #44403C;
+  --ink-muted: #78716C;
+  --burgundy: #7C2D2D;
+  --burgundy-light: #A84444;
+  --navy: #1E3A5F;
+  --navy-light: #2D5A8A;
+  --gold: #B8860B;
+  --gold-light: #DAA520;
+  --sage: #5D6B5D;
+  --sage-light: #8A9A8A;
+
+  /* Semantic Colors */
+  --background: var(--cream);
+  --foreground: var(--ink);
+  --card-bg: #FFFCF7;
+  --border: #E7E0D5;
+  --border-dark: #D4CCC0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --font-serif: 'Noto Serif KR', 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Base Styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at top, rgba(184, 134, 11, 0.03) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-blend-mode: normal, overlay;
 }
 
-/* 스크롤바 커스텀 */
+/* Typography */
+.font-display {
+  font-family: 'Noto Serif KR', 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.font-display-light {
+  font-family: 'Cormorant Garamond', 'Noto Serif KR', Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* Premium Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
+  background: var(--parchment);
+  border-left: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: linear-gradient(180deg, var(--ink-muted) 0%, var(--ink-light) 100%);
+  border-radius: 0;
+  border: 2px solid var(--parchment);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: linear-gradient(180deg, var(--ink-light) 0%, var(--ink) 100%);
 }
 
-/* 애니메이션 */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -53,12 +94,265 @@ body {
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* 포커스 스타일 */
+@keyframes pageFlip {
+  0% {
+    transform: perspective(1000px) rotateY(0deg);
+    transform-origin: left center;
+  }
+  100% {
+    transform: perspective(1000px) rotateY(-3deg);
+    transform-origin: left center;
+  }
+}
+
+@keyframes inkWrite {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-page-flip:hover {
+  animation: pageFlip 0.3s ease-out forwards;
+}
+
+/* Journal Card Styles */
+.journal-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 3px rgba(28, 25, 23, 0.04),
+    0 4px 12px rgba(28, 25, 23, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+}
+
+.journal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--burgundy) 0%, var(--gold) 50%, var(--navy) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.journal-card:hover::before {
+  opacity: 1;
+}
+
+/* Ink Underline Effect */
+.ink-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.ink-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--burgundy), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ink-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-light) 100%);
+  color: var(--cream);
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(28, 25, 23, 0.2);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border-dark);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--parchment);
+  border-color: var(--ink-muted);
+}
+
+/* Category Tags - Journal Style */
+.tag-ai {
+  background: linear-gradient(135deg, #E8F4FD 0%, #D6EBFA 100%);
+  color: var(--navy);
+  border: 1px solid #B8D4E8;
+}
+.tag-life {
+  background: linear-gradient(135deg, #F3E8F4 0%, #E8D6EB 100%);
+  color: #5D3A6B;
+  border: 1px solid #D4B8D8;
+}
+.tag-reading {
+  background: linear-gradient(135deg, #FDF6E8 0%, #FAF0D6 100%);
+  color: #8B6914;
+  border: 1px solid #E8D4A8;
+}
+.tag-hobby {
+  background: linear-gradient(135deg, #FCE8EE 0%, #F8D6E0 100%);
+  color: #8B3A5D;
+  border: 1px solid #E8B8C8;
+}
+.tag-work {
+  background: linear-gradient(135deg, #F0F0EC 0%, #E4E4DC 100%);
+  color: var(--ink-light);
+  border: 1px solid #D4D4C8;
+}
+.tag-finance {
+  background: linear-gradient(135deg, #E8F4EC 0%, #D6EBE0 100%);
+  color: #2D5A3D;
+  border: 1px solid #B8D8C4;
+}
+.tag-other {
+  background: linear-gradient(135deg, #F4F2EC 0%, #EBE8DC 100%);
+  color: var(--ink-muted);
+  border: 1px solid #D8D4C8;
+}
+
+/* Focus Styles */
 *:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--gold-light);
+  color: var(--ink);
+}
+
+/* Decorative Elements */
+.ornament {
+  display: inline-block;
+  color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-dark), transparent);
+  margin: 1.5rem 0;
+}
+
+/* Calendar Day Styles */
+.calendar-day {
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1px solid transparent;
+}
+
+.calendar-day:hover {
+  background: var(--cream-dark);
+  border-color: var(--border);
+  transform: translateY(-1px);
+}
+
+.calendar-day.selected {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+
+.calendar-day.today {
+  box-shadow: inset 0 0 0 2px var(--burgundy);
+}
+
+/* Input Styles */
+.journal-input {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.journal-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+}
+
+.journal-input::placeholder {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* Texture Overlay */
+.paper-texture {
+  position: relative;
+}
+
+.paper-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
 }

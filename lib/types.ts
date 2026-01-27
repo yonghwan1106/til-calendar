@@ -28,45 +28,45 @@ export interface TilStorage {
 // 카테고리 정보 (라벨, 색상)
 export interface CategoryInfo {
   label: string;
-  color: string;
-  bgColor: string;
+  tagClass: string;
+  dotColor: string;
 }
 
-// 카테고리 매핑
+// 카테고리 매핑 - Journal Style
 export const CATEGORIES: Record<Category, CategoryInfo> = {
   ai: {
     label: 'AI',
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
+    tagClass: 'tag-ai',
+    dotColor: 'bg-[#1E3A5F]',
   },
   life: {
     label: '인생',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100',
+    tagClass: 'tag-life',
+    dotColor: 'bg-[#5D3A6B]',
   },
   reading: {
     label: '독서',
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-100',
+    tagClass: 'tag-reading',
+    dotColor: 'bg-[#8B6914]',
   },
   hobby: {
     label: '취미',
-    color: 'text-pink-600',
-    bgColor: 'bg-pink-100',
+    tagClass: 'tag-hobby',
+    dotColor: 'bg-[#8B3A5D]',
   },
   work: {
     label: '업무',
-    color: 'text-slate-600',
-    bgColor: 'bg-slate-100',
+    tagClass: 'tag-work',
+    dotColor: 'bg-[#44403C]',
   },
   finance: {
     label: '재테크',
-    color: 'text-emerald-600',
-    bgColor: 'bg-emerald-100',
+    tagClass: 'tag-finance',
+    dotColor: 'bg-[#2D5A3D]',
   },
   other: {
     label: '기타',
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
+    tagClass: 'tag-other',
+    dotColor: 'bg-[#78716C]',
   },
 };

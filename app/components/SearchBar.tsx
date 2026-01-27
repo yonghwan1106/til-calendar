@@ -34,12 +34,12 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const hasFilters = keyword || category;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+    <div className="journal-card rounded-lg p-4">
       {/* 검색 입력 */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--ink-muted)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -47,7 +47,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={1.5}
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
@@ -56,16 +56,16 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="TIL 검색..."
-            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+            placeholder="기록 검색..."
+            className="w-full pl-10 pr-4 py-2.5 journal-input rounded text-sm text-[var(--ink)]"
           />
         </div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`p-2 border rounded-lg transition-colors ${
+          className={`p-2.5 border rounded transition-all ${
             isExpanded || category
-              ? 'border-blue-500 text-blue-500 bg-blue-50'
-              : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+              ? 'border-[var(--gold)] text-[var(--gold)] bg-[var(--gold)]/5'
+              : 'border-[var(--border)] text-[var(--ink-muted)] hover:bg-[var(--parchment)] hover:border-[var(--border-dark)]'
           }`}
           aria-label="필터"
         >
@@ -78,14 +78,14 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={1.5}
               d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
             />
           </svg>
         </button>
         <button
           onClick={handleSearch}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors text-sm"
+          className="btn-primary px-5 py-2.5 rounded font-medium text-sm"
         >
           검색
         </button>
@@ -93,17 +93,17 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
 
       {/* 필터 확장 영역 */}
       {isExpanded && (
-        <div className="mt-3 pt-3 border-t border-gray-100">
-          <label className="block text-xs font-medium text-gray-600 mb-2">
-            카테고리 필터
+        <div className="mt-4 pt-4 border-t border-[var(--border)]">
+          <label className="block text-xs uppercase tracking-wider font-medium text-[var(--ink-muted)] mb-3">
+            분류 필터
           </label>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setCategory('')}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
                 !category
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[var(--ink)] text-[var(--cream)]'
+                  : 'bg-[var(--parchment)] text-[var(--ink-muted)] hover:bg-[var(--cream-dark)] hover:text-[var(--ink-light)]'
               }`}
             >
               전체
@@ -112,10 +112,10 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
                   category === cat
-                    ? `${CATEGORIES[cat].bgColor} ${CATEGORIES[cat].color} ring-2 ring-offset-1 ring-current`
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? `${CATEGORIES[cat].tagClass} ring-2 ring-[var(--ink)] ring-offset-1 ring-offset-[var(--card-bg)]`
+                    : 'bg-[var(--parchment)] text-[var(--ink-muted)] hover:bg-[var(--cream-dark)] hover:text-[var(--ink-light)]'
                 }`}
               >
                 {CATEGORIES[cat].label}
@@ -129,7 +129,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
       {hasFilters && (
         <button
           onClick={handleClear}
-          className="mt-2 text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          className="mt-3 text-xs text-[var(--ink-muted)] hover:text-[var(--burgundy)] flex items-center gap-1.5 transition-colors"
         >
           <svg
             className="w-3 h-3"

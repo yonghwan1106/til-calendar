@@ -68,26 +68,32 @@ export default function Calendar({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between mb-4 md:mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          {year}년 {getMonthName(month)}
-        </h2>
-        <div className="flex items-center gap-2">
+    <div className="journal-card rounded-none md:rounded-lg p-4 md:p-8 paper-texture">
+      {/* 헤더 - Elegant Style */}
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)] mb-1">
+            {year}
+          </p>
+          <h2 className="font-display text-2xl md:text-3xl text-[var(--ink)]">
+            {getMonthName(month)}
+          </h2>
+        </div>
+        <div className="flex items-center gap-1">
           <button
             onClick={goToToday}
-            className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-[var(--burgundy)] hover:bg-[var(--parchment)] rounded transition-colors ink-underline"
           >
             오늘
           </button>
+          <div className="w-px h-6 bg-[var(--border)] mx-2" />
           <button
             onClick={goToPrevMonth}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--parchment)] rounded transition-colors group"
             aria-label="이전 달"
           >
             <svg
-              className="w-5 h-5 text-gray-600"
+              className="w-5 h-5 text-[var(--ink-muted)] group-hover:text-[var(--ink)] transition-colors"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -95,18 +101,18 @@ export default function Calendar({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 d="M15 19l-7-7 7-7"
               />
             </svg>
           </button>
           <button
             onClick={goToNextMonth}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--parchment)] rounded transition-colors group"
             aria-label="다음 달"
           >
             <svg
-              className="w-5 h-5 text-gray-600"
+              className="w-5 h-5 text-[var(--ink-muted)] group-hover:text-[var(--ink)] transition-colors"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -114,7 +120,7 @@ export default function Calendar({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 d="M9 5l7 7-7 7"
               />
             </svg>
@@ -123,12 +129,12 @@ export default function Calendar({
       </div>
 
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 mb-2 border-b border-gray-100 pb-2">
+      <div className="grid grid-cols-7 mb-3">
         {dayNames.map((day, index) => (
           <div
             key={day}
-            className={`text-center text-sm font-medium py-2 ${
-              index === 0 ? 'text-red-500' : index === 6 ? 'text-blue-500' : 'text-gray-500'
+            className={`text-center text-xs uppercase tracking-wider py-3 font-medium ${
+              index === 0 ? 'text-[var(--burgundy)]' : index === 6 ? 'text-[var(--navy)]' : 'text-[var(--ink-muted)]'
             }`}
           >
             {day}
@@ -136,12 +142,15 @@ export default function Calendar({
         ))}
       </div>
 
+      {/* Decorative Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--border-dark)] to-transparent mb-3" />
+
       {/* 날짜 그리드 - 확장 모드 */}
       {expanded ? (
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-px bg-[var(--border)]">
           {calendarDays.map((day, index) => {
             if (day === null) {
-              return <div key={`empty-${index}`} className="min-h-[100px] md:min-h-[120px]" />;
+              return <div key={`empty-${index}`} className="min-h-[110px] md:min-h-[130px] bg-[var(--cream)]" />;
             }
 
             const dateStr = formatDate(new Date(year, month, day));
@@ -157,38 +166,48 @@ export default function Calendar({
                 key={day}
                 onClick={() => onDateSelect(dateStr)}
                 className={`
-                  min-h-[100px] md:min-h-[120px] p-1.5 md:p-2 flex flex-col items-start rounded-lg
-                  transition-all duration-200 border text-left
+                  min-h-[110px] md:min-h-[130px] p-2 md:p-3 flex flex-col items-start
+                  transition-all duration-300 text-left group
                   ${isSelected
-                    ? 'bg-blue-50 border-blue-500 shadow-sm'
-                    : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'}
-                  ${isTodayDate ? 'ring-2 ring-blue-500 ring-inset' : ''}
+                    ? 'bg-[var(--ink)] text-[var(--cream)]'
+                    : 'bg-[var(--card-bg)] hover:bg-[var(--cream-dark)]'}
+                  ${isTodayDate && !isSelected ? 'ring-2 ring-inset ring-[var(--burgundy)]' : ''}
                 `}
               >
                 <span
                   className={`
-                    text-sm font-semibold mb-1
-                    ${isSunday ? 'text-red-500' : isSaturday ? 'text-blue-500' : 'text-gray-700'}
+                    text-sm font-display mb-2
+                    ${isSelected
+                      ? 'text-[var(--cream)]'
+                      : isSunday
+                        ? 'text-[var(--burgundy)]'
+                        : isSaturday
+                          ? 'text-[var(--navy)]'
+                          : 'text-[var(--ink)]'}
                   `}
                 >
                   {day}
                 </span>
                 {/* TIL 제목 목록 */}
-                <div className="w-full space-y-0.5 overflow-hidden flex-1">
-                  {dayEntries.slice(0, 3).map((entry) => (
+                <div className="w-full space-y-1 overflow-hidden flex-1">
+                  {dayEntries.slice(0, 3).map((entry, idx) => (
                     <div
                       key={entry.id}
                       className={`
-                        text-[10px] md:text-xs px-1.5 py-0.5 rounded truncate
-                        ${CATEGORIES[entry.category].bgColor} ${CATEGORIES[entry.category].color}
+                        text-[10px] md:text-xs px-2 py-1 rounded truncate
+                        transition-all duration-200
+                        ${isSelected
+                          ? 'bg-white/20 text-[var(--cream)]'
+                          : `${CATEGORIES[entry.category].tagClass}`}
                       `}
+                      style={{ animationDelay: `${idx * 50}ms` }}
                       title={entry.title}
                     >
                       {entry.title}
                     </div>
                   ))}
                   {dayEntries.length > 3 && (
-                    <div className="text-[10px] text-gray-400 px-1">
+                    <div className={`text-[10px] px-2 ${isSelected ? 'text-white/60' : 'text-[var(--ink-muted)]'}`}>
                       +{dayEntries.length - 3}개 더
                     </div>
                   )}
@@ -198,7 +217,7 @@ export default function Calendar({
           })}
         </div>
       ) : (
-        /* 컴팩트 모드 (기존) */
+        /* 컴팩트 모드 */
         <div className="grid grid-cols-7 gap-1">
           {calendarDays.map((day, index) => {
             if (day === null) {
@@ -219,34 +238,40 @@ export default function Calendar({
                 key={day}
                 onClick={() => onDateSelect(dateStr)}
                 className={`
-                  aspect-square flex flex-col items-center justify-center rounded-lg
-                  transition-all duration-200 relative
-                  ${isSelected ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100'}
-                  ${isTodayDate && !isSelected ? 'ring-2 ring-blue-500 ring-inset' : ''}
+                  aspect-square flex flex-col items-center justify-center rounded
+                  calendar-day relative
+                  ${isSelected ? 'selected' : ''}
+                  ${isTodayDate && !isSelected ? 'today' : ''}
                 `}
               >
                 <span
                   className={`
                     text-sm font-medium
-                    ${isSelected ? 'text-white' : isSunday ? 'text-red-500' : isSaturday ? 'text-blue-500' : 'text-gray-700'}
+                    ${isSelected
+                      ? 'text-[var(--cream)]'
+                      : isSunday
+                        ? 'text-[var(--burgundy)]'
+                        : isSaturday
+                          ? 'text-[var(--navy)]'
+                          : 'text-[var(--ink)]'}
                   `}
                 >
                   {day}
                 </span>
                 {entryCount > 0 && (
-                  <div className="flex gap-0.5 mt-0.5">
-                    {Array.from({ length: Math.min(entryCount, 3) }).map((_, i) => (
+                  <div className="flex gap-0.5 mt-1">
+                    {dayEntries.slice(0, 3).map((entry, i) => (
                       <div
                         key={i}
                         className={`w-1.5 h-1.5 rounded-full ${
-                          isSelected ? 'bg-white' : 'bg-blue-500'
+                          isSelected ? 'bg-[var(--cream)]' : CATEGORIES[entry.category].dotColor
                         }`}
                       />
                     ))}
                     {entryCount > 3 && (
                       <span
-                        className={`text-[10px] ${
-                          isSelected ? 'text-white' : 'text-blue-500'
+                        className={`text-[10px] leading-none ${
+                          isSelected ? 'text-[var(--cream)]' : 'text-[var(--ink-muted)]'
                         }`}
                       >
                         +
@@ -259,6 +284,13 @@ export default function Calendar({
           })}
         </div>
       )}
+
+      {/* Footer Ornament */}
+      <div className="mt-6 flex items-center justify-center gap-3 text-[var(--ink-muted)]">
+        <span className="ornament">❧</span>
+        <span className="text-xs tracking-widest uppercase">Scholar&apos;s Journal</span>
+        <span className="ornament">❧</span>
+      </div>
     </div>
   );
 }

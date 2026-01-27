@@ -45,40 +45,49 @@ export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilForm
 
   const formatDateDisplay = (dateStr: string) => {
     const [year, month, day] = dateStr.split('-');
-    return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
+    const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const weekday = ['일', '월', '화', '수', '목', '금', '토'][dateObj.getDay()];
+    return `${parseInt(month)}월 ${parseInt(day)}일 ${weekday}요일`;
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-bold text-gray-900 mb-1">
-        {editEntry ? 'TIL 수정' : '새 TIL 기록'}
-      </h3>
-      <p className="text-sm text-gray-500 mb-4">{formatDateDisplay(date)}</p>
+    <div className="journal-card rounded-lg p-6 paper-texture">
+      {/* Header */}
+      <div className="mb-6">
+        <p className="text-xs uppercase tracking-[0.15em] text-[var(--ink-muted)] mb-1">
+          {editEntry ? '기록 수정' : '새 기록'}
+        </p>
+        <h3 className="font-display text-xl text-[var(--ink)]">
+          {formatDateDisplay(date)}
+        </h3>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="h-px bg-gradient-to-r from-[var(--border-dark)] via-[var(--border)] to-transparent mb-6" />
+
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* 제목 */}
         <div>
           <label
             htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[var(--ink-light)] mb-2"
           >
-            오늘 배운 것 <span className="text-red-500">*</span>
+            오늘 배운 것 <span className="text-[var(--burgundy)]">*</span>
           </label>
           <input
             type="text"
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="한 줄로 요약해주세요"
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+            placeholder="한 줄로 요약해주세요..."
+            className="w-full px-4 py-3 journal-input rounded text-[var(--ink)] placeholder:text-[var(--ink-muted)] placeholder:italic"
             required
           />
         </div>
 
         {/* 카테고리 */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            카테고리
+          <label className="block text-sm font-medium text-[var(--ink-light)] mb-3">
+            분류
           </label>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(CATEGORIES) as Category[]).map((cat) => (
@@ -87,11 +96,11 @@ export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilForm
                 type="button"
                 onClick={() => setCategory(cat)}
                 className={`
-                  px-3 py-1.5 rounded-full text-sm font-medium transition-all
+                  px-3 py-1.5 rounded text-sm font-medium transition-all duration-200
                   ${
                     category === cat
-                      ? `${CATEGORIES[cat].bgColor} ${CATEGORIES[cat].color} ring-2 ring-offset-1 ring-current`
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? `${CATEGORIES[cat].tagClass} ring-2 ring-[var(--ink)] ring-offset-2 ring-offset-[var(--card-bg)]`
+                      : 'bg-[var(--parchment)] text-[var(--ink-muted)] hover:bg-[var(--cream-dark)] hover:text-[var(--ink-light)]'
                   }
                 `}
               >
@@ -105,25 +114,25 @@ export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilForm
         <div>
           <label
             htmlFor="content"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[var(--ink-light)] mb-2"
           >
-            상세 내용 <span className="text-gray-400">(선택)</span>
+            상세 내용 <span className="text-[var(--ink-muted)] font-normal">(선택)</span>
           </label>
           <textarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="더 자세한 내용을 기록해보세요"
+            placeholder="더 자세한 내용을 기록해보세요..."
             rows={4}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
+            className="w-full px-4 py-3 journal-input rounded text-[var(--ink)] placeholder:text-[var(--ink-muted)] placeholder:italic resize-none"
           />
         </div>
 
         {/* 버튼 */}
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-3 pt-2">
           <button
             type="submit"
-            className="flex-1 bg-blue-500 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors"
+            className="flex-1 btn-primary py-3 px-6 rounded font-medium"
           >
             {editEntry ? '수정하기' : '기록하기'}
           </button>
@@ -131,13 +140,18 @@ export default function TilForm({ date, editEntry, onSubmit, onCancel }: TilForm
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="btn-secondary py-3 px-6 rounded font-medium"
             >
               취소
             </button>
           )}
         </div>
       </form>
+
+      {/* Decorative corner */}
+      <div className="absolute top-0 right-0 w-12 h-12 overflow-hidden pointer-events-none opacity-20">
+        <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[var(--gold)] to-transparent transform rotate-45 translate-x-8 -translate-y-8" />
+      </div>
     </div>
   );
 }

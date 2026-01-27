@@ -139,34 +139,41 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--cream)]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-[var(--ink-muted)] border-t-[var(--burgundy)] rounded-full animate-spin"></div>
+          <p className="text-sm text-[var(--ink-muted)] font-display tracking-wider">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen pb-8">
+    <main className="min-h-screen pb-8 bg-[var(--cream)]">
       {/* 헤더 */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+      <header className="bg-[var(--card-bg)] border-b border-[var(--border)] sticky top-0 z-20 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div>
-                <h1 className="text-xl font-bold text-gray-900">TIL Calendar</h1>
-                <p className="text-sm text-gray-500">매일 배움 기록</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[var(--gold)] text-lg">&#9830;</span>
+                  <h1 className="font-display text-xl text-[var(--ink)]">Scholar&apos;s Journal</h1>
+                </div>
+                <p className="text-xs uppercase tracking-[0.15em] text-[var(--ink-muted)] mt-0.5">Daily Learning Record</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Stats entries={entries} />
+              <div className="w-px h-8 bg-[var(--border)]" />
               <a
                 href="https://github.com/yonghwan1106/til-calendar"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
                 aria-label="GitHub"
               >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     fillRule="evenodd"
                     d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
@@ -181,28 +188,26 @@ export default function Home() {
 
       {/* 마이그레이션 배너 */}
       {showMigrationBanner && (
-        <div className="bg-amber-50 border-b border-amber-200">
+        <div className="bg-gradient-to-r from-[var(--gold)]/10 via-[var(--gold)]/5 to-[var(--gold)]/10 border-b border-[var(--gold)]/30">
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-sm text-amber-800">
-                  브라우저에 저장된 <strong>{localDataCount}개</strong>의 기존 기록이 있습니다. 클라우드로 마이그레이션하시겠습니까?
+                <span className="text-[var(--gold)]">&#9670;</span>
+                <p className="text-sm text-[var(--ink)]">
+                  브라우저에 저장된 <strong className="text-[var(--burgundy)]">{localDataCount}개</strong>의 기존 기록이 있습니다. 클라우드로 마이그레이션하시겠습니까?
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleMigration}
                   disabled={isMigrating}
-                  className="px-4 py-1.5 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 disabled:opacity-50 transition-colors"
+                  className="px-4 py-1.5 bg-[var(--gold)] text-white text-sm font-medium rounded hover:bg-[var(--gold-dark)] disabled:opacity-50 transition-colors"
                 >
                   {isMigrating ? '마이그레이션 중...' : '마이그레이션'}
                 </button>
                 <button
                   onClick={() => setShowMigrationBanner(false)}
-                  className="p-1.5 text-amber-600 hover:bg-amber-100 rounded-lg transition-colors"
+                  className="p-1.5 text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--parchment)] rounded transition-colors"
                   aria-label="닫기"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,13 +228,17 @@ export default function Home() {
 
         {/* 검색 모드 */}
         {isSearchMode ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              검색 결과
-              <span className="text-sm font-normal text-gray-500 ml-2">
-                {searchResults.length}개
+          <div className="journal-card rounded-lg p-6 paper-texture">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-[var(--gold)]">&#9830;</span>
+              <h3 className="font-display text-xl text-[var(--ink)]">
+                검색 결과
+              </h3>
+              <span className="text-sm text-[var(--ink-muted)] font-display-light">
+                {searchResults.length}개의 기록
               </span>
-            </h3>
+            </div>
+            <div className="h-px bg-gradient-to-r from-[var(--border-dark)] via-[var(--border)] to-transparent mb-6" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {searchResults.length > 0 ? (
                 searchResults.map((entry) => (
@@ -247,8 +256,9 @@ export default function Home() {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center py-8 text-gray-500">
-                  <p>검색 결과가 없습니다.</p>
+                <div className="col-span-full text-center py-12">
+                  <span className="text-4xl text-[var(--ink-muted)] opacity-30">&#9998;</span>
+                  <p className="text-[var(--ink-muted)] mt-3 font-display-light">검색 결과가 없습니다.</p>
                 </div>
               )}
             </div>
@@ -269,18 +279,21 @@ export default function Home() {
             {/* 상세 패널 (사이드) */}
             {showDetailPanel && (
               <div className="w-full md:w-96 flex-shrink-0 space-y-4 animate-fade-in">
-                {/* 닫기 버튼 */}
+                {/* 헤더 */}
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {formatDateDisplay(selectedDate)}
-                  </h3>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.15em] text-[var(--ink-muted)] mb-0.5">Selected Date</p>
+                    <h3 className="font-display text-lg text-[var(--ink)]">
+                      {formatDateDisplay(selectedDate)}
+                    </h3>
+                  </div>
                   <button
                     onClick={() => setShowDetailPanel(false)}
-                    className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--parchment)] rounded transition-colors"
                     aria-label="패널 닫기"
                   >
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -294,11 +307,14 @@ export default function Home() {
                 />
 
                 {/* 해당 날짜 기록 목록 */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">
-                    {selectedDateEntries.length}개의 기록
-                  </h4>
-                  <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                <div className="journal-card rounded-lg p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-[var(--gold)] text-sm">&#9998;</span>
+                    <h4 className="text-sm font-medium text-[var(--ink-light)]">
+                      {selectedDateEntries.length}개의 기록
+                    </h4>
+                  </div>
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
                     {selectedDateEntries.length > 0 ? (
                       selectedDateEntries.map((entry) => (
                         <div key={entry.id} className="animate-fade-in">
@@ -310,21 +326,14 @@ export default function Home() {
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-6 text-gray-500">
-                        <svg
-                          className="w-10 h-10 mx-auto mb-2 text-gray-300"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                          />
-                        </svg>
-                        <p className="text-sm">기록이 없습니다</p>
+                      <div className="text-center py-8">
+                        <span className="text-5xl text-[var(--ink-muted)] opacity-20">&#128214;</span>
+                        <p className="text-sm text-[var(--ink-muted)] mt-3 font-display-light italic">
+                          아직 기록이 없습니다
+                        </p>
+                        <p className="text-xs text-[var(--ink-muted)] mt-1 opacity-60">
+                          오늘 배운 것을 기록해보세요
+                        </p>
                       </div>
                     )}
                   </div>
@@ -336,8 +345,20 @@ export default function Home() {
       </div>
 
       {/* 푸터 */}
-      <footer className="mt-8 text-center text-sm text-gray-400">
-        <p>&quot;시간을 지배한 사나이&quot;에서 영감을 받은 프로젝트</p>
+      <footer className="mt-12 pb-4">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent mb-6" />
+          <div className="text-center">
+            <p className="text-xs text-[var(--ink-muted)] tracking-wider">
+              <span className="italic">&quot;시간을 지배한 사나이&quot;</span>에서 영감을 받은 프로젝트
+            </p>
+            <div className="flex items-center justify-center gap-2 mt-3 text-[var(--ink-muted)] opacity-50">
+              <span className="ornament text-sm">&#10087;</span>
+              <span className="text-[10px] uppercase tracking-[0.2em]">Est. 2026</span>
+              <span className="ornament text-sm">&#10087;</span>
+            </div>
+          </div>
+        </div>
       </footer>
     </main>
   );
