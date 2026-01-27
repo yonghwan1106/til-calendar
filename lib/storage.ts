@@ -1,11 +1,35 @@
 'use client';
 
-import { TilEntry, TilStorage } from './types';
+import { TilEntry, TilStorage, Category, CATEGORIES } from './types';
 import { generateId } from './utils';
 
 const STORAGE_KEY = 'til-calendar-data';
 
-// localStorage에서 데이터 로드
+// 유효한 카테고리인지 확인
+function isValidCategory(category: string): category is Category {
+  return category in CATEGORIES;
+}
+
+// 기존 카테고리를 새 카테고리로 마이그레이션
+function migrateCategory(category: string): Category {
+  // 삭제된 카테고리 매핑
+  const migration: Record<string, Category> = {
+    'coding': 'ai',      // 코딩 → AI
+    'language': 'other', // 언어 → 기타
+  };
+
+  if (migration[category]) {
+    return migration[category];
+  }
+
+  if (isValidCategory(category)) {
+    return category;
+  }
+
+  return 'other';
+}
+
+// localStorage에서 데이터 로드 (마이그레이션 포함)
 export function loadStorage(): TilStorage {
   if (typeof window === 'undefined') {
     return { entries: [], lastUpdated: new Date().toISOString() };
@@ -14,7 +38,25 @@ export function loadStorage(): TilStorage {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (data) {
-      return JSON.parse(data);
+      const storage = JSON.parse(data) as TilStorage;
+
+      // 카테고리 마이그레이션
+      let needsSave = false;
+      storage.entries = storage.entries.map(entry => {
+        const migratedCategory = migrateCategory(entry.category);
+        if (migratedCategory !== entry.category) {
+          needsSave = true;
+          return { ...entry, category: migratedCategory };
+        }
+        return entry;
+      });
+
+      // 마이그레이션이 발생했으면 저장
+      if (needsSave) {
+        saveStorage(storage);
+      }
+
+      return storage;
     }
   } catch (error) {
     console.error('Failed to load storage:', error);
