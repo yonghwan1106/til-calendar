@@ -24,7 +24,7 @@ function dbToApp(db: DbTilEntry): TilEntry {
 // 모든 TIL 엔트리 가져오기
 export async function getAllEntries(): Promise<TilEntry[]> {
   const { data, error } = await supabase
-    .from('til_entries')
+    .from('entries')
     .select('*')
     .order('created_at', { ascending: false });
 
@@ -39,7 +39,7 @@ export async function getAllEntries(): Promise<TilEntry[]> {
 // 특정 날짜의 TIL 엔트리 가져오기
 export async function getEntriesByDate(date: string): Promise<TilEntry[]> {
   const { data, error } = await supabase
-    .from('til_entries')
+    .from('entries')
     .select('*')
     .eq('date', date)
     .order('created_at', { ascending: false });
@@ -57,7 +57,7 @@ export async function addEntry(
   entry: Omit<TilEntry, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<TilEntry | null> {
   const { data, error } = await supabase
-    .from('til_entries')
+    .from('entries')
     .insert({
       date: entry.date,
       title: entry.title,
@@ -87,7 +87,7 @@ export async function updateEntry(
   if (updates.category !== undefined) updateData.category = updates.category;
 
   const { data, error } = await supabase
-    .from('til_entries')
+    .from('entries')
     .update(updateData)
     .eq('id', id)
     .select()
@@ -104,7 +104,7 @@ export async function updateEntry(
 // TIL 엔트리 삭제
 export async function deleteEntry(id: string): Promise<boolean> {
   const { error } = await supabase
-    .from('til_entries')
+    .from('entries')
     .delete()
     .eq('id', id);
 
@@ -119,7 +119,7 @@ export async function deleteEntry(id: string): Promise<boolean> {
 // 특정 ID의 TIL 엔트리 가져오기
 export async function getEntryById(id: string): Promise<TilEntry | null> {
   const { data, error } = await supabase
-    .from('til_entries')
+    .from('entries')
     .select('*')
     .eq('id', id)
     .single();
