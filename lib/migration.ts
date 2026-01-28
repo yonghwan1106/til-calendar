@@ -68,7 +68,7 @@ export async function migrateToSupabase(): Promise<{ success: number; failed: nu
 
   for (const entry of entries) {
     const { error } = await supabase
-      .from('entries')
+      .from('til_entries')
       .insert({
         date: entry.date,
         title: entry.title,
